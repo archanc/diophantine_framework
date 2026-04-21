@@ -1,0 +1,326 @@
+Notebook[{
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"ClearAll", "[", 
+    RowBox[{"getConvolutions", ",", "computeGrowth", ",", "results"}], "]"}], 
+   ";"}], "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"(*", " ", 
+   RowBox[{
+   "===", "===", "===", "===", "===", "===", "===", "===", "===", "===", "===",
+     "===", "===", "==="}], "*)"}], 
+  RowBox[{"(*", 
+   RowBox[{"Transcendence", " ", "Framework", " ", "Growth", " ", "Tester"}], 
+   "*)"}], 
+  RowBox[{"(*", " ", 
+   RowBox[{
+   "===", "===", "===", "===", "===", "===", "===", "===", "===", "===", "===",
+     "===", "===", "==="}], "*)"}], 
+  RowBox[{"(*", 
+   RowBox[{"1.", " ", "Define", " ", "base", " ", "parameters"}], "*)"}], 
+  RowBox[{
+   RowBox[{"d", "=", "2"}], ";"}], "       ", 
+  RowBox[{"(*", 
+   RowBox[{"Degree", " ", "d"}], "*)"}]}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"mMax", "=", "100"}], ";"}], "   ", 
+  RowBox[{"(*", 
+   RowBox[{
+   "Maximum", " ", "value", " ", "of", " ", "m", " ", "to", " ", "test"}], 
+   "*)"}], "\n", "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{"2.", " ", "Define", " ", "the", " ", "bounded"}], ",", 
+    RowBox[{"non", "-", 
+     RowBox[{"eventually", " ", "periodic", " ", "sequence", " ", "a_k"}]}]}],
+    "*)"}], "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{"Example", ":", 
+    RowBox[{
+     RowBox[{"The", " ", "Thue"}], "-", 
+     RowBox[{"Morse", " ", "sequence"}]}]}], "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"aSeq", "[", "k_", "]"}], ":=", 
+    RowBox[{"ThueMorse", "[", "k", "]"}]}], ";"}], "\n", 
+  "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{
+    RowBox[{"Function", " ", "to", " ", "compute", " ", "the", " ", "j"}], "-", 
+    RowBox[{"fold", " ", "convolutions", " ", 
+     RowBox[{"a_k", "^", 
+      RowBox[{"(", "j", ")"}]}]}]}], "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"getConvolutions", "[", 
+     RowBox[{"dDegree_", ",", "maxK_"}], "]"}], ":=", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"x", ",", "poly"}], "}"}], ",", 
+      RowBox[{
+       RowBox[{"poly", "=", 
+        RowBox[{"Sum", "[", 
+         RowBox[{
+          RowBox[{
+           RowBox[{"aSeq", "[", "k", "]"}], "*", 
+           RowBox[{"x", "^", "k"}]}], ",", 
+          RowBox[{"{", 
+           RowBox[{"k", ",", "0", ",", "maxK"}], "}"}]}], "]"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"(*", 
+        RowBox[{
+         RowBox[{"Use", " ", "Series"}], ",", 
+         RowBox[{
+         "convert", " ", "back", " ", "to", " ", "Normal", " ", "poly"}], ",", 
+         RowBox[{
+         "and", " ", "PadRight", " ", "to", " ", "prevent", " ", "index", " ",
+           "errors"}]}], "*)"}], 
+       RowBox[{"Table", "[", 
+        RowBox[{
+         RowBox[{"PadRight", "[", 
+          RowBox[{
+           RowBox[{"CoefficientList", "[", 
+            RowBox[{
+             RowBox[{"Normal", "[", 
+              RowBox[{"Series", "[", 
+               RowBox[{
+                RowBox[{"poly", "^", "j"}], ",", 
+                RowBox[{"{", 
+                 RowBox[{"x", ",", "0", ",", "maxK"}], "}"}]}], "]"}], "]"}], 
+             ",", "x"}], "]"}], ",", 
+           RowBox[{"maxK", "+", "1"}]}], "]"}], ",", 
+         RowBox[{"{", 
+          RowBox[{"j", ",", "0", ",", "dDegree"}], "}"}]}], "]"}]}]}], 
+     "]"}]}], ";"}], "\[IndentingNewLine]", "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{"3.", " ", "Function", " ", "to", " ", "compute", " ", 
+    RowBox[{
+     RowBox[{"(", 
+      RowBox[{"Log", "[", 
+       RowBox[{"Max", "|", 
+        RowBox[{"M_", "1", "k"}], "|"}], "]"}], ")"}], "/", "m"}], " ", "for",
+     " ", "a", " ", "specific", " ", "m"}], "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"computeGrowth", "[", 
+     RowBox[{"dDegree_", ",", "m_"}], "]"}], ":=", 
+    RowBox[{"Module", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+       "Dval", ",", "maxK", ",", "aConv", ",", "matrixA", ",", "matrixAprime",
+         ",", "minors", ",", "maxMinor"}], "}"}], ",", 
+      RowBox[{"(*", 
+       RowBox[{"D", "=", 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"d", "+", "1"}], ")"}], 
+         RowBox[{"(", 
+          RowBox[{"m", "+", "1"}], ")"}]}]}], "*)"}], 
+      RowBox[{
+       RowBox[{"Dval", "=", 
+        RowBox[{
+         RowBox[{"(", 
+          RowBox[{"dDegree", "+", "1"}], ")"}], "*", 
+         RowBox[{"(", 
+          RowBox[{"m", "+", "1"}], ")"}]}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"(*", 
+        RowBox[{
+         RowBox[{
+          RowBox[{
+          "The", " ", "matrix", " ", "A", " ", "requires", " ", "equations", " ",
+            "up", " ", "to", " ", "D"}], "-", "2"}], ",", 
+         RowBox[{
+         "requiring", " ", "indices", " ", "up", " ", "to", " ", "maxK"}]}], 
+        "*)"}], 
+       RowBox[{"maxK", "=", 
+        RowBox[{"Dval", "-", "2"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"(*", 
+        RowBox[{"Precompute", " ", "convolutions"}], "*)"}], 
+       RowBox[{"aConv", "=", 
+        RowBox[{"getConvolutions", "[", 
+         RowBox[{"dDegree", ",", "maxK"}], "]"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"(*", 
+        RowBox[{"Construct", " ", "the", " ", 
+         RowBox[{"(", 
+          RowBox[{"D", "-", "1"}], ")"}], " ", "x", " ", "D", " ", "block", " ",
+          "matrix", " ", "A"}], "*)"}], 
+       RowBox[{"matrixA", "=", 
+        RowBox[{"Table", "[", 
+         RowBox[{
+          RowBox[{"Flatten", "@", 
+           RowBox[{"Table", "[", 
+            RowBox[{
+             RowBox[{"If", "[", 
+              RowBox[{
+               RowBox[{"k", ">=", "j"}], ",", 
+               RowBox[{"aConv", "[", 
+                RowBox[{"[", 
+                 RowBox[{
+                  RowBox[{"i", "+", "1"}], ",", 
+                  RowBox[{"k", "-", "j", "+", "1"}]}], "]"}], "]"}], ",", 
+               "0"}], "]"}], ",", 
+             RowBox[{"{", 
+              RowBox[{"i", ",", "0", ",", "dDegree"}], "}"}], ",", 
+             RowBox[{"{", 
+              RowBox[{"j", ",", "0", ",", "m"}], "}"}]}], "]"}]}], ",", 
+          RowBox[{"{", 
+           RowBox[{"k", ",", "0", ",", "maxK"}], "}"}]}], "]"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"(*", 
+        RowBox[{"Construct", " ", 
+         RowBox[{"A", "'"}], " ", "by", " ", "removing", " ", "the", " ", 
+         "first", " ", "column"}], "*)"}], 
+       RowBox[{"matrixAprime", "=", 
+        RowBox[{"matrixA", "[", 
+         RowBox[{"[", 
+          RowBox[{"All", ",", 
+           RowBox[{"2", ";;", "Dval"}]}], "]"}], "]"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"(*", 
+        RowBox[{
+         RowBox[{
+         "Compute", " ", "the", " ", "minors", " ", "M_", "1", "k", " ", "by",
+           " ", "dropping", " ", "the", " ", "1", "st", " ", "row", " ", 
+          "and", " ", "the", " ", "k"}], "-", 
+         RowBox[{"th", " ", "column", " ", "of", " ", 
+          RowBox[{"A", "'"}]}]}], "*)"}], 
+       RowBox[{"minors", "=", 
+        RowBox[{"Table", "[", 
+         RowBox[{
+          RowBox[{"Det", "[", 
+           RowBox[{"Drop", "[", 
+            RowBox[{"matrixAprime", ",", 
+             RowBox[{"{", "1", "}"}], ",", 
+             RowBox[{"{", "k", "}"}]}], "]"}], "]"}], ",", 
+          RowBox[{"{", 
+           RowBox[{"k", ",", "1", ",", 
+            RowBox[{"Dval", "-", "1"}]}], "}"}]}], "]"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"(*", 
+        RowBox[{
+        "Find", " ", "the", " ", "maximum", " ", "absolute", " ", "value", " ",
+          "of", " ", "these", " ", "minors"}], "*)"}], 
+       RowBox[{"maxMinor", "=", 
+        RowBox[{"Max", "[", 
+         RowBox[{"Abs", "[", "minors", "]"}], "]"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"(*", 
+        RowBox[{
+        "Return", " ", "the", " ", "calculated", " ", "growth", " ", 
+         "ratio"}], "*)"}], 
+       RowBox[{"If", "[", 
+        RowBox[{
+         RowBox[{"maxMinor", "==", "0"}], ",", "0", ",", 
+         RowBox[{"N", "[", 
+          RowBox[{
+           RowBox[{"Log", "[", "maxMinor", "]"}], "/", "m"}], "]"}]}], 
+        "]"}]}]}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+  "\[IndentingNewLine]", 
+  RowBox[{"(*", 
+   RowBox[{
+   "4.", " ", "Execute", " ", "the", " ", "test", " ", "across", " ", "the", " ",
+     "range", " ", "of", " ", "m", " ", "and", " ", "plot", " ", "the", " ", 
+    "result"}], "*)"}]}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"results", "=", 
+    RowBox[{"Table", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"m", ",", 
+        RowBox[{"computeGrowth", "[", 
+         RowBox[{"d", ",", "m"}], "]"}]}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"m", ",", "2", ",", "mMax", ",", "2"}], "}"}]}], "]"}]}], 
+   ";"}], "\n"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+  "Print", "[", "\"\<Growth results {m, Log[Max|M_1k|]/m}:\>\"", "]"}], 
+  ";"}], "\n", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"Print", "[", 
+    RowBox[{"Grid", "[", 
+     RowBox[{
+      RowBox[{"Prepend", "[", 
+       RowBox[{"results", ",", 
+        RowBox[{"{", 
+         RowBox[{"\"\<m\>\"", ",", "\"\<Growth\>\""}], "}"}]}], "]"}], ",", 
+      RowBox[{"Frame", "->", "All"}]}], "]"}], "]"}], ";"}], 
+  "\[IndentingNewLine]"}], "\[IndentingNewLine]", 
+ RowBox[{"ListLinePlot", "[", 
+  RowBox[{
+   RowBox[{"Select", "[", 
+    RowBox[{"results", ",", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"#", "[", 
+        RowBox[{"[", "2", "]"}], "]"}], ">", "0"}], "&"}]}], "]"}], ",", 
+   RowBox[{"PlotRange", "->", 
+    RowBox[{"{", 
+     RowBox[{"0", ",", "Automatic"}], "}"}]}], ",", 
+   RowBox[{"PlotStyle", "\[Rule]", "Black"}], ",", 
+   RowBox[{"PlotMarkers", "->", "Automatic"}], ",", 
+   RowBox[{"AxesLabel", "\[Rule]", 
+    RowBox[{"{", 
+     RowBox[{"m", ",", 
+      FractionBox[
+       RowBox[{"Log", "[", 
+        RowBox[{"f", "[", "m", "]"}], "]"}], "m"]}], "}"}]}]}], 
+  "]"}]}], "Input",
+ CellChangeTimes->{{3.9856935565570393`*^9, 3.9856935565570393`*^9}, {
+   3.985693604420534*^9, 3.985693622343792*^9}, {3.9856937552509594`*^9, 
+   3.9856937732519436`*^9}, {3.9856938876955967`*^9, 
+   3.9856939148845863`*^9}, {3.985694320318594*^9, 3.9856943545308666`*^9}, {
+   3.9856945602405148`*^9, 3.9856945851747513`*^9}, {3.9856946359150906`*^9, 
+   3.9856948515777645`*^9}, {3.985694885217371*^9, 3.9856949077110424`*^9}, {
+   3.985694939766157*^9, 3.9856949893285465`*^9}, 3.985695578609413*^9, {
+   3.985695611400316*^9, 3.9856956899507675`*^9}, {3.985733471586767*^9, 
+   3.985733486909981*^9}, {3.985735197353918*^9, 3.985735252814377*^9}, {
+   3.9857353733071613`*^9, 3.9857354200387974`*^9}, {3.9857373597642727`*^9, 
+   3.9857373807649784`*^9}, {3.985737445421097*^9, 3.985737514564867*^9}, {
+   3.98573756964892*^9, 3.9857376167351456`*^9}, {3.9857376680275383`*^9, 
+   3.9857377005192204`*^9}, {3.985737740511383*^9, 3.985737801826271*^9}, {
+   3.985739337531887*^9, 3.985739340309187*^9}, {3.9857393906980286`*^9, 
+   3.9857393939404354`*^9}, {3.9857398324106197`*^9, 3.985739835143732*^9}, {
+   3.9857401681182117`*^9, 3.985740181511711*^9}, {3.9857412107448673`*^9, 
+   3.98574122157522*^9}, {3.9857424107978325`*^9, 3.9857424173190365`*^9}, {
+   3.9857424791585827`*^9, 3.9857425263751545`*^9}, {3.9857425795733585`*^9, 
+   3.985742580177946*^9}, {3.9857439407480717`*^9, 3.985743943523943*^9}, {
+   3.985744205238367*^9, 3.985744209291666*^9}, {3.985744800459852*^9, 
+   3.9857448074280224`*^9}, {3.9857483512135715`*^9, 3.985748374149643*^9}, {
+   3.9857508664810505`*^9, 3.9857509125787506`*^9}, {3.9857509449804707`*^9, 
+   3.985751009081465*^9}, {3.9857518213204*^9, 3.985751829888151*^9}, {
+   3.9857519435024014`*^9, 3.985751976969288*^9}, {3.985752212969761*^9, 
+   3.9857522225355034`*^9}, {3.9857526921632786`*^9, 3.985752846094263*^9}, {
+   3.985752880395357*^9, 3.9857530888668957`*^9}, {3.9857531257012024`*^9, 
+   3.9857531842284584`*^9}, {3.98575536270533*^9, 3.985755418835779*^9}, {
+   3.985755983567377*^9, 3.985755990379141*^9}, {3.9857565502774334`*^9, 
+   3.9857565519910774`*^9}, {3.9857587159598713`*^9, 
+   3.9857587920130634`*^9}, {3.985759504115364*^9, 3.9857595178624096`*^9}, {
+   3.985759779176342*^9, 3.985759787912922*^9}, {3.9857612040274296`*^9, 
+   3.9857612470089264`*^9}, {3.985761375136835*^9, 3.9857613909810276`*^9}, {
+   3.985761709684393*^9, 3.9857617321584034`*^9}, {3.985762918723694*^9, 
+   3.985762926416548*^9}, {3.9857652241249065`*^9, 3.985765254515995*^9}, {
+   3.9857652965308723`*^9, 3.9857652993228893`*^9}, {3.9857658351227226`*^9, 
+   3.985765866071434*^9}, {3.9857664534410515`*^9, 3.98576646635623*^9}},
+ CellLabel->"In[350]:=",ExpressionUUID->"6510c408-b1ae-634c-99f6-35cb2a996cf1"]
+},
+WindowSize->{571, 422},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+LightDark->"Light",
+PrivateNotebookOptions->{"FileOutlineCache"->False},
+Magnification:>0.75 Inherited,
+FrontEndVersion->"14.3 for Microsoft Windows (64-bit) (July 8, 2025)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"ee12c078-79ec-3d48-88a4-0b09c2a1da51"
+]
+
